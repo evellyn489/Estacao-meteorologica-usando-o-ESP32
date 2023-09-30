@@ -1,0 +1,10 @@
+@media screen and (max-width: 768px) {
+    main.mainCard {
+      flex-direction: column; 
+      align-items: stretch; 
+
+      div.card {
+        width: 100%;
+      }
+    }
+}

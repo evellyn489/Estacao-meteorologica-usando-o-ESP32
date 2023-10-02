@@ -69,7 +69,7 @@ export function WeatherStation() {
     });
 
     const readTemperature = () => {
-        axios.get('http://localhost:3000/data')
+        axios.get('https://weatherstationesp32.vercel.app/data')
             .then(response => {
                 const responseData = response.data;
 

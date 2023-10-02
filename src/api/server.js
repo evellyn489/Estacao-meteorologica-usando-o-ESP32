@@ -3,7 +3,7 @@ import cors from 'cors';
 import { json } from 'express';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 'https://weatherstationesp32.vercel.app/data';
 
 app.use(json());
 

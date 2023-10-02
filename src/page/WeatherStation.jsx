@@ -5,51 +5,122 @@ import axios from 'axios';
 import '../styles/style.scss';
 
 export function WeatherStation() {
-    // Crie um estado para armazenar os dados da API
-    const [apiData, setApiData] = useState([]);
-    
-    // Crie um estado para armazenar as opções do gráfico
     const [chartOptions, setChartOptions] = useState({
         chart: {
             id: 'line-chart',
         },
         xaxis: {
-            categories: [0, 2, 4, 6, 10],
+            categories: [],
             labels: {
                 style: {
-                    colors: '#fff'
-                }
-            }
+                    colors: '#fff',
+                },
+            },
         },
-        yaxis: {
-            labels: {
-                style: {
-                    colors: '#fff'
-                }
-            }
-        },
+        yaxis: [
+            {
+                labels: {
+                    style: {
+                        colors: '#9C27B0',
+                    },
+                },
+                title: {
+                    text: 'Temperatura (°C)',
+                    style: {
+                        color: '#9C27B0',
+                    },
+                },
+            },
+            {
+                labels: {
+                    style: {
+                        colors: '#F44336',
+                    },
+                },
+                opposite: true,
+                title: {
+                    text: 'Umidade (%)',
+                    style: {
+                        color: '#F44336',
+                    },
+                },
+            },
+        ],
         dataLabels: {
             style: {
-                colors: ['#9C27B0']
+                colors: ['#9C27B0'],
             },
             enabled: true,
         },
+        series: [
+            {
+                name: 'Temperatura',
+                data: [],
+                type: 'line',
+                yaxisIndex: 0,
+            },
+            {
+                name: 'Umidade',
+                data: [],
+                type: 'line',
+                yaxisIndex: 1,
+            }
+        ],
     });
 
-    // Use o useEffect para fazer a solicitação à API quando o componente for montado
-    useEffect(() => {
-        // Faça a solicitação à API Express com a URL completa incluindo o protocolo
+    const fetchData = () => {
         axios.get('http://localhost:3000/data')
             .then(response => {
-                // Atualize o estado com os dados da API
-                setApiData(response.data);
+                const responseData = response.data;
+
+                let categories = [];
+                let temperatureData = [];
+                let umidadeData = [];
+                let tempoData = [];
+
+                if (responseData && typeof responseData === 'object') {
+                    if (responseData.tempo) {
+                        categories.push(responseData.tempo);
+                    }
+                    temperatureData = [responseData.temperatura];
+                    umidadeData = [responseData.umidade];
+                    tempoData = [responseData.tempo];
+                } else {
+                    console.error('Formato de dados inesperado: ', responseData);
+                }
+
+                setChartOptions(prevOptions => ({
+                    ...prevOptions,
+                    xaxis: {
+                        ...prevOptions.xaxis,
+                        categories: categories,
+                    },
+                    series: [
+                        {
+                            name: 'Temperatura',
+                            data: temperatureData,
+                        },
+                        {
+                            name: 'Umidade',
+                            data: umidadeData,
+                        }
+                    ],
+                }));
             })
             .catch(error => {
                 console.error('Erro ao buscar dados da API: ', error);
             });
-    }, []); // A lista vazia de dependências garante que isso só será executado uma vez quando o componente for montado
+    };
 
-    // Resto do seu código...
+    useEffect(() => {
+        fetchData();
+
+        const interval = setInterval(() => {
+            fetchData();
+        }, 30000); // 300000 milissegundos = 5 minutos
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className="conteiner">
@@ -65,7 +136,7 @@ export function WeatherStation() {
                 <div className="humidityChart">
                     <ReactApexChart
                         options={chartOptions}
-                        series={apiData} // Use os dados da API aqui
+                        series={chartOptions.series}
                         type="line"
                         width={450}
                         height={300}

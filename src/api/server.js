@@ -14,12 +14,12 @@ app.use(cors());
 let sensorData = null;
 
 app.post('/data', (req, res) => {
-  const { temperatura, umidade } = req.body;
+  const { temperatura, umidade, tempo } = req.body;
 
-  console.log(`Temperatura: ${temperatura}°C, Umidade: ${umidade}%`);
+  console.log(`Temperatura: ${temperatura}°C, Umidade: ${umidade}%, Tempo: ${tempo}`);
 
   // Armazene os dados recebidos na variável sensorData
-  sensorData = { temperatura, umidade };
+  sensorData = { temperatura, umidade, tempo };
 
   res.status(200).send('Dados recebidos com sucesso');
 });

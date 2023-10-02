@@ -68,6 +68,16 @@ export function WeatherStation() {
         ],
     });
 
+    const readTemperature = () => {
+        axios.get('http://localhost:3000/data')
+            .then(response => {
+                const responseData = response.data;
+
+                return responseData.temperatura;
+            })
+    }
+
+
     const fetchData = () => {
         axios.get('http://localhost:3000/data')
             .then(response => {
@@ -130,7 +140,7 @@ export function WeatherStation() {
 
             <main className="mainCard">
                 <div className="card">
-                    <p>30°C</p>
+                    <p>{readTemperature}</p>
                 </div>
 
                 <div className="humidityChart">

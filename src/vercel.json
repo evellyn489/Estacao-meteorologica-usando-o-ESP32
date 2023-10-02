@@ -1,5 +1,0 @@
-{
-    "routes": [
-      { "src": "/data", "dest": "/api/server.js" }
-    ]
-}

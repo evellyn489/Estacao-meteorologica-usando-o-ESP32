@@ -93,7 +93,7 @@ export function WeatherStation() {
               umidade: [...prevData.umidade, newData.umidade]
             }))
             
-            
+            console.log(data)
             setChartData((prevChartData) => ({
               ...prevChartData,
               options: {

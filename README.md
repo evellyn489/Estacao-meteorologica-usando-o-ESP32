@@ -13,6 +13,30 @@
   <li>Cabo Micro USB</li>
 </ul>
 
+## Dependências do projeto
+
+<ul>
+  <li>Node 18^</li>
+  <li>ESP-32 Framework</li>
+</ul>
+
+
+## Montagem do ESP-32
+
+<img src="./src/images/image1.jpg"> 
+<img src="./src/images/image2.jpeg"> 
+
+A montagem do circuito foi feita da seguinte forma:
+<ol>
+  <li>Conectamos o ESP-32 na protoboard</li>
+  <li>Conectamos o sensor na protoboard, se atentando a posição dele, o qual deve estar virado ao lado direito do ESP32, como mostra na foto acima</li>
+  <li>Fizemos as conexões com os cabos jumpers: Pino VCC, Data e GND do sensor aos pinos 3V3, D4 e GND da placa ESP32, respectivamente</li>
+</ol>
+
+## Instruções para rodar o projeto localmente
+
+Clone o repositório utilizando ´git clone´, em seguida rode o comando "npm install" para instalar todas as depedências do backend do projeto, acesse o diretorio "src/api" e rode "node server.js" em seguida na pasta "src" rode o frontend com npm run dev.
+
 ## Desenvolvimento do projeto
 
 ### Início

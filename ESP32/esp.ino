@@ -8,7 +8,7 @@
 #define SERVER_IP ""
 #define SERVER_PORT 3000
 
-#define DHT_PIN 4 // Pino do sensor DHT11
+#define DHT_PIN 4 
 
 DHT dht(DHT_PIN, DHT11);
 
@@ -27,18 +27,14 @@ void setup() {
 }
 
 void loop() {
-  // Ler temperatura e umidade do sensor DHT11
   float temperatura = dht.readTemperature();
   float umidade = dht.readHumidity();
 
-  // Verificar se a leitura do sensor é válida
   if (!isnan(temperatura) && !isnan(umidade)) {
-    // Enviar dados para o servidor
     HTTPClient http;
     String url = "http://" + String(SERVER_IP) + ":" + String(SERVER_PORT) + "/data";
     http.begin(url);
 
-    // Montar os dados em formato JSON
     String dadosJSON = "{\"temperatura\":" + String(temperatura) + ",\"umidade\":" + String(umidade) + "}";
 
     http.addHeader("Content-Type", "application/json");
@@ -57,6 +53,5 @@ void loop() {
     Serial.println("Falha na leitura do sensor.");
   }
 
-  // Aguardar um intervalo antes da próxima leitura
-  delay(60000); // Leitura a cada 60 segundos
+  delay(60000); 
 }

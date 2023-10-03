@@ -8,11 +8,10 @@ export function WeatherStation() {
     const [temperature, setTemperature] = useState(0);
     const [data, setData] = useState({ temperatura: [], umidade: [] });
 
-
-    
-    const options = {
+    const [chartData, setChartData] = useState({
+      options: {
         chart: {
-          id: 'line-chart',
+          id: 'real-time-chart',
           animations: {
             enabled: true,
             easing: 'linear',
@@ -58,13 +57,13 @@ export function WeatherStation() {
         ],
         legend: {
           show: true,
-          color: '#fff'
-        },
-      };
-      const series = [
+
+        }
+      },
+      series: [
         {
           name: 'Temperatura (°C)',
-          data: data.temperatura,
+          data: [],
           style: {
             color: '#fff',
           },
@@ -72,10 +71,12 @@ export function WeatherStation() {
         },
         {
           name: 'Umidade (%)',
-          data: data.umidade,
+          data: [],
         },
-      ];
-
+      ],
+    })
+    
+  
     useEffect(() => {
 
         const fetchData = async () => {
@@ -84,21 +85,37 @@ export function WeatherStation() {
             const newData = response.data;
             
             setTemperature(newData.temperatura);
+            console.log(newData)
+
+            setData((prevData) => ({
+              ...prevData,
+              temperatura: [...prevData.temperatura, newData.temperatura],
+              umidade: [...prevData.umidade, newData.umidade]
+            }))
             
-            setData((prevData) => ({
-                temperatura: [...prevData.temperatura, newData.temperatura],
-                umidade: [...prevData.umidade, newData.umidade],
-              }));
-            console.log(data.temperatura)
-
-            const MAX_DATA_POINTS = 240;
-            if (data.temperatura.length > MAX_DATA_POINTS) {
-            setData((prevData) => ({
-                temperatura: prevData.temperatura.slice(0, MAX_DATA_POINTS),
-                umidade: prevData.umidade.slice(0, MAX_DATA_POINTS),
+            
+            setChartData((prevChartData) => ({
+              ...prevChartData,
+              options: {
+                ...prevChartData.options,
+                xaxis: {
+                  categories: [...prevChartData.options.xaxis.categories, new Date().getTime()],
+                },
+              },
+              
+              series: [
+                {
+                  name: 'Temperatura',
+                  data: data.temperatura,
+              },
+              {
+                  name: 'Umidade',
+                  data: data.umidade,
+              }
+              ],
             }));
-            }
 
+          console.log(newData)
             
           } catch (error) {
             console.error('Erro ao buscar temperatura:', error);
@@ -126,13 +143,11 @@ export function WeatherStation() {
 
                 <div className="humidityChart">
                     <ReactApexChart
-                        options={options}
-                        series={series}
+                        options={chartData.options}
+                        series={chartData.series}
                         type="line"
                         width={450}
                         height={300}
-
-
                     />
                 </div>
             </main>

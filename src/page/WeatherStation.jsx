@@ -7,10 +7,12 @@ import '../styles/style.scss';
 export function WeatherStation() {
     const [temperature, setTemperature] = useState(0);
     const [data, setData] = useState({ temperatura: [], umidade: [] });
+
+
     
     const options = {
         chart: {
-          id: 'real-time-chart',
+          id: 'line-chart',
           animations: {
             enabled: true,
             easing: 'linear',
@@ -56,6 +58,7 @@ export function WeatherStation() {
         ],
         legend: {
           show: true,
+          color: '#fff'
         },
       };
       const series = [
@@ -73,53 +76,6 @@ export function WeatherStation() {
         },
       ];
 
-
-    const fetchData = () => {
-        axios.get('http://localhost:3000/data')
-            .then(response => {
-                const responseData = response.data;
-                setTemperature(responseData.temperatura)
-
-                let categories = [];
-                let temperatureData = [];
-                let umidadeData = [];
-                let tempoData = [];
-
-                if (responseData && typeof responseData === 'object') {
-                    if (responseData.tempo) {
-                        categories.push(responseData.tempo);
-                    }
-                    temperatureData = [responseData.temperatura];
-                    umidadeData = [responseData.umidade];
-                    tempoData = [responseData.tempo];
-                } else {
-                    console.error('Formato de dados inesperado: ', responseData);
-                }
-
-                setChartOptions(prevOptions => ({
-                    ...prevOptions,
-                    xaxis: {
-                        ...prevOptions.xaxis,
-                        categories: categories,
-                    },
-                    series: [
-                        {
-                            name: 'Temperatura',
-                            data: temperatureData,
-                        },
-                        {
-                            name: 'Umidade',
-                            data: umidadeData,
-                        }
-                    ],
-                }));
-            })
-            .catch(error => {
-                console.error('Erro ao buscar dados da API: ', error);
-            });
-    };
-
-
     useEffect(() => {
 
         const fetchData = async () => {
@@ -128,17 +84,29 @@ export function WeatherStation() {
             const newData = response.data;
             
             setTemperature(newData.temperatura);
-            console.log(data)
+            
             setData((prevData) => ({
                 temperatura: [...prevData.temperatura, newData.temperatura],
                 umidade: [...prevData.umidade, newData.umidade],
               }));
+            console.log(data.temperatura)
+
+            const MAX_DATA_POINTS = 240;
+            if (data.temperatura.length > MAX_DATA_POINTS) {
+            setData((prevData) => ({
+                temperatura: prevData.temperatura.slice(0, MAX_DATA_POINTS),
+                umidade: prevData.umidade.slice(0, MAX_DATA_POINTS),
+            }));
+            }
+
+            
           } catch (error) {
             console.error('Erro ao buscar temperatura:', error);
           }
+        
         };
     
-        const intervalId = setInterval(fetchData, 1000);
+        const intervalId = setInterval(fetchData, 3000);
     
         return () => clearInterval(intervalId);
     
@@ -163,6 +131,8 @@ export function WeatherStation() {
                         type="line"
                         width={450}
                         height={300}
+
+
                     />
                 </div>
             </main>

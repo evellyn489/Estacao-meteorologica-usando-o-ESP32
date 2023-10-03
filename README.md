@@ -13,9 +13,8 @@
   <li>Cabo Micro USB</li>
 </ul>
 
-## Montagem do ESP-32
-
 ## Desenvolvimento do projeto
+
 ### Início
 <ul>
   <li>Para iniciar, instalarmos os pacotes necessários para o funcionamento correto do equipamento.</li>
@@ -33,4 +32,5 @@
   <li>Começamos criando a página web com ReactJS</li>
   <li>Utilizamos o arduínio IDE para desenvolver os códigos responsáveis pela obtenção da temperatura e umidade</li>
   <li>Criamos um server.js para que o ESP-32 pudesse enviar os dados que obteve do sensor</li>
+  <li>Com os dados, atualizamos a página web</li>
 </ul>

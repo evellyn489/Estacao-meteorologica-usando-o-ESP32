@@ -5,83 +5,80 @@ import axios from 'axios';
 import '../styles/style.scss';
 
 export function WeatherStation() {
-    const [chartOptions, setChartOptions] = useState({
+    const [temperature, setTemperature] = useState(0);
+    const [data, setData] = useState({ temperatura: [], umidade: [] });
+    
+    const options = {
         chart: {
-            id: 'line-chart',
+          id: 'real-time-chart',
+          animations: {
+            enabled: true,
+            easing: 'linear',
+            dynamicAnimation: {
+              speed: 1000,
+            },
+          },
         },
         xaxis: {
-            categories: [],
+          type: 'datetime',
+          categories: [],
+        },
+        yaxis: [
+          {
             labels: {
                 style: {
                     colors: '#fff',
                 },
             },
-        },
-        yaxis: [
-            {
-                labels: {
-                    style: {
-                        colors: '#9C27B0',
-                    },
-                },
-                title: {
-                    text: 'Temperatura (°C)',
-                    style: {
-                        color: '#9C27B0',
-                    },
-                },
+            title: {
+              text: 'Temperatura (°C)',
+              style: {
+                color: '#9C27B0',
             },
-            {
-                labels: {
-                    style: {
-                        colors: '#F44336',
-                    },
-                },
-                opposite: true,
-                title: {
-                    text: 'Umidade (%)',
-                    style: {
-                        color: '#F44336',
-                    },
+            },
+          },
+          {
+            opposite: true,
+            labels: {
+                style: {
+                    colors: '#fff',
                 },
             },
-        ],
-        dataLabels: {
-            style: {
-                colors: ['#9C27B0'],
-            },
-            enabled: true,
-        },
-        series: [
-            {
-                name: 'Temperatura',
-                data: [],
-                type: 'line',
-                yaxisIndex: 0,
-            },
-            {
-                name: 'Umidade',
-                data: [],
-                type: 'line',
-                yaxisIndex: 1,
-            }
-        ],
-    });
 
-    const readTemperature = () => {
-        axios.get('https://weatherstationesp32.vercel.app/data')
-            .then(response => {
-                const responseData = response.data;
+            title: {
+              text: 'Umidade (%)',
+              style: {
+                color: '#F44336',
+                
+            },
+            },
+          },
+        ],
+        legend: {
+          show: true,
+        },
+      };
+      const series = [
+        {
+          name: 'Temperatura (°C)',
+          data: data.temperatura,
+          style: {
+            color: '#fff',
+          },
 
-                return responseData.temperatura;
-            })
-    }
+        },
+        {
+          name: 'Umidade (%)',
+          data: data.umidade,
+        },
+      ];
 
 
     const fetchData = () => {
-        axios.get('https://weatherstationesp32.vercel.app/data')
+        axios.get('http://localhost:3000/data')
             .then(response => {
                 const responseData = response.data;
+                setTemperature(responseData.temperatura)
 
                 let categories = [];
                 let temperatureData = [];
@@ -122,15 +119,31 @@ export function WeatherStation() {
             });
     };
 
+
     useEffect(() => {
+
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('http://localhost:3000/data'); 
+            const newData = response.data;
+            
+            setTemperature(newData.temperatura);
+            console.log(data)
+            setData((prevData) => ({
+                temperatura: [...prevData.temperatura, newData.temperatura],
+                umidade: [...prevData.umidade, newData.umidade],
+              }));
+          } catch (error) {
+            console.error('Erro ao buscar temperatura:', error);
+          }
+        };
+    
+        const intervalId = setInterval(fetchData, 1000);
+    
+        return () => clearInterval(intervalId);
+    
         fetchData();
-
-        const interval = setInterval(() => {
-            fetchData();
-        }, 30000); // 300000 milissegundos = 5 minutos
-
-        return () => clearInterval(interval);
-    }, []);
+      }, []);
 
     return (
         <div className="conteiner">
@@ -140,13 +153,13 @@ export function WeatherStation() {
 
             <main className="mainCard">
                 <div className="card">
-                    <p>{readTemperature}</p>
+                    <p>{temperature} °C</p>
                 </div>
 
                 <div className="humidityChart">
                     <ReactApexChart
-                        options={chartOptions}
-                        series={chartOptions.series}
+                        options={options}
+                        series={series}
                         type="line"
                         width={450}
                         height={300}

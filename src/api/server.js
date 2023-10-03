@@ -3,14 +3,13 @@ import cors from 'cors';
 import { json } from 'express';
 
 const app = express();
-const port = 'https://weatherstationesp32.vercel.app/data';
+const port = 3000;
 
 app.use(json());
 
-// Habilitando o CORS
 app.use(cors());
 
-// Variável para armazenar os dados temporariamente
+
 let sensorData = null;
 
 app.post('/data', (req, res) => {
@@ -18,15 +17,12 @@ app.post('/data', (req, res) => {
 
   console.log(`Temperatura: ${temperatura}°C, Umidade: ${umidade}%, Tempo: ${tempo}`);
 
-  // Armazene os dados recebidos na variável sensorData
   sensorData = { temperatura, umidade, tempo };
 
   res.status(200).send('Dados recebidos com sucesso');
 });
 
-// Rota GET para recuperar os dados
 app.get('/data', (req, res) => {
-  // Verifique se há dados na variável sensorData
   if (sensorData) {
     res.json(sensorData);
   } else {
